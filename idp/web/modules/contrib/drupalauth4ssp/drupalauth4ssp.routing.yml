@@ -1,0 +1,7 @@
+drupalauth4ssp.settings:
+  path: 'admin/config/people/drupalauth4ssp'
+  defaults:
+    _title: 'DrupalAuth for SimpleSAMLphp Settings'
+    _form: 'Drupal\drupalauth4ssp\Form\SettingsForm'
+  requirements:
+    _permission: 'administer drupalauth4ssp configuration'

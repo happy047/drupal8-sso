@@ -1,0 +1,29 @@
+langcode: en
+activate: true
+mail_attr: mail
+unique_id: uid
+user_name: uid
+auth_source: localhost-sp
+login_link_show: true
+login_link_display_name: 'IDP login'
+header_no_cache: false
+role:
+  population: ''
+  eval_every_time: false
+register_users: true
+allow:
+  set_drupal_pwd: true
+  default_login: true
+  default_login_roles: {  }
+  default_login_users: '1'
+logout_goto_url: null
+user_register_original: visitors_admin_approval
+sync:
+  mail: true
+  user_name: true
+autoenablesaml: true
+debug: false
+secure: false
+httponly: false
+_core:
+  default_config_hash: RMy8ch2MOT68bCD63OGZQRdMk2pD6UXPEZMuCIisbfs

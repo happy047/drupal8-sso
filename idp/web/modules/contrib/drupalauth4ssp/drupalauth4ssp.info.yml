@@ -1,0 +1,11 @@
+name: DrupalAuth for SimpleSAMLphp
+type: module
+description: This module tightly integrates the SimpleSAMLphp Identity Provider login experience with a Drupal site.
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: drupalauth4ssp.settings
+
+# Information added by Drupal.org packaging script on 2020-06-02
+version: '8.x-1.1'
+project: 'drupalauth4ssp'
+datestamp: 1591138314

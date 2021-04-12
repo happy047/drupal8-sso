@@ -1,0 +1,13 @@
+name: idp
+recipe: drupal8
+config:
+  webroot: web
+  php: 7.4
+services:
+  database:
+    type: mariadb
+    creds:
+      user: drupal8
+      password: drupal8
+      database: idp
+    portforward: true

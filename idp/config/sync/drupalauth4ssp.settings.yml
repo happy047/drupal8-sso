@@ -1,0 +1,4 @@
+authsource: drupal-userpass
+returnto_list: '*'
+_core:
+  default_config_hash: DN1ZWFfc03RvmcAbAVsPS18Oym6o99KWVDB_Rit2lB4

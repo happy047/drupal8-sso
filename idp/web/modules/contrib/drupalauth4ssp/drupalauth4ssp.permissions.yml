@@ -1,0 +1,3 @@
+administer drupalauth4ssp configuration:
+  title: 'Administer DrupalAuth for SimpleSAMLphp configuration'
+  restrict access: true

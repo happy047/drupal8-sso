@@ -1,0 +1,160 @@
+<?php
+
+/**
+ * @file
+ * DrupalAuth For simpleSAMLphp module.
+ *
+ * This module tightly integrates the SimpleSAMLphp Identity Provider login
+ * experience with a Drupal site.
+ */
+
+use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use SimpleSAML\Configuration;
+use SimpleSAML\Session;
+
+/**
+ * Implements hook_user_login().
+ *
+ * Sets a special cookie for drupalauth SimpleSAMLphp module.
+ */
+function drupalauth4ssp_user_login($account) {
+  drupalauth4ssp_set_user_cookie($account);
+}
+
+/**
+ * Set auth cookie for the account.
+ *
+ * @param \Drupal\Core\Session\AccountInterface $account
+ *   User account.
+ *
+ * @todo Move to class and depend on SSP config service?
+ * @see _drupalauth4ssp_get_simplesamlphp_config()
+ */
+function drupalauth4ssp_set_user_cookie(AccountInterface $account) {
+  // Get the configuration information from SimpleSAMLphp.
+  $ssp_config = _drupalauth4ssp_get_simplesamlphp_config();
+
+  // If we don't have configuration, exit without doing anything.
+  if (!is_array($ssp_config)) {
+    // The least we can do is write something to the watchdog so someone will
+    // know what's happening.
+    \Drupal::logger('drupalauth4ssp')
+      ->warning('Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', ['%name' => $account->getAccountName()]);
+    return;
+  }
+
+  // Store the authenticated user's uid in the cookie (create a validation hash
+  // to ensure nobody tampers with the uid).
+  // @todo Set via request
+  $hash = Crypt::hmacBase64($account->id(), $ssp_config['secretsalt'] . \Drupal::service('private_key')->get());
+  setcookie($ssp_config['cookie_name'], $hash . ':' . $account->id(), 0, $ssp_config['baseurlpath']);
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function drupalauth4ssp_user_logout($account) {
+  /** @var \Drupal\Core\Session\AccountProxy $account */
+  // Get the configuration information from SimpleSAMLphp.
+  $ssp_config = _drupalauth4ssp_get_simplesamlphp_config();
+
+  // If we don't have configuration, exit without doing anything.
+  if (!is_array($ssp_config)) {
+    // The least we can do is write something to the watchdog so someone will
+    // know what's happening.
+    \Drupal::logger('drupalauth4ssp')->warning('Could not use drupalauth for %name, could not get the SimpleSAMLphp configuration.', ['%name' => $account->name]);
+    return;
+  }
+
+  // Delete the cookie.
+  $hash = Crypt::hmacBase64($account->id(), $ssp_config['secretsalt'] . \Drupal::service('private_key')->get());
+  setcookie($ssp_config['cookie_name'], $hash . ':' . $account->id(), time() - 3600, $ssp_config['baseurlpath']);
+
+  // Invalidate SimpleSAML session by expiring it.
+  $session = Session::getSessionFromRequest();
+  // Backward compatibility with SimpleSAMP older than 1.14.
+  // SimpleSAML_Session::getAuthority() has been removed in 1.14.
+  // @see https://simplesamlphp.org/docs/development/simplesamlphp-upgrade-notes-1.14
+  if (method_exists($session, 'getAuthority')) {
+    $session->setAuthorityExpire($session->getAuthority(), 1);
+  }
+  else {
+    foreach ($session->getAuthorities() as $authority) {
+      $session->setAuthorityExpire($authority, 1);
+    }
+  }
+
+  $request = \Drupal::request();
+  $returnTo = $request->query->get('ReturnTo');
+  // If the ReturnTo URL is present, send the user to the URL.
+  if (!empty($returnTo)) {
+
+    $returnto_list = \Drupal::service('config.factory')->get('drupalauth4ssp.settings')->get('returnto_list');
+    $path_matcher = \Drupal::service('path.matcher');
+    // Check the ReturnTo if it's in the allowed list.
+    if ($path_matcher->matchPath($returnTo, $returnto_list)) {
+      $destination = &drupal_static(__FUNCTION__);
+      $destination = $returnTo;
+    }
+  }
+}
+
+/**
+ * Returns the SimpleSAMLphp configuration.
+ *
+ * @todo Convert to service?
+ */
+function _drupalauth4ssp_get_simplesamlphp_config() {
+  $config = NULL;
+
+  $ssp_config = Configuration::getInstance();
+
+  if (!is_object($ssp_config)) {
+    return;
+  }
+
+  // Get the secretsalt.
+  $config['secretsalt'] = $ssp_config->getValue('secretsalt');
+
+  // Get the baseurlpath.
+  $config['baseurlpath'] = $ssp_config->getBasePath();
+
+  unset($ssp_config);
+
+  $ssp_authsources = Configuration::getConfig('authsources.php');
+
+  $authsource = $ssp_authsources->getValue(\Drupal::service('config.factory')->get('drupalauth4ssp.settings')->get('authsource'));
+
+  // Get cookie_name from specified authsource.
+  $config['cookie_name'] = !empty($authsource['cookie_name']) ? $authsource['cookie_name'] : 'drupalauth4ssp';
+
+  unset($ssp_authsources);
+
+  return $config;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function drupalauth4ssp_form_user_login_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  $form['#submit'][] = 'drupalauth4ssp_user_login_submit';
+}
+
+/**
+ * Sets redirect upon successful login.
+ */
+function drupalauth4ssp_user_login_submit($form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  // If the ReturnTo URL is present, send the user to the URL.
+  $returnTo = \Drupal::request()->query->get('ReturnTo');
+  if (!empty($returnTo)) {
+    $returnto_list = \Drupal::service('config.factory')->get('drupalauth4ssp.settings')->get('returnto_list');
+    $path_matcher = \Drupal::service('path.matcher');
+    // Check the ReturnTo if it's in the allowed list.
+    $match = $path_matcher->matchPath($returnTo, $returnto_list);
+    if ($match) {
+      $form_state->setRedirectUrl(Url::fromUri($returnTo));
+    }
+  }
+}

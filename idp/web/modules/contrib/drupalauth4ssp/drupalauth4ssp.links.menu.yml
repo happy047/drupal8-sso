@@ -1,0 +1,6 @@
+drupalauth4ssp.settings:
+  title: DrupalAuth for SimpleSAMLphp Settings
+  parent: user.admin_index
+  description: 'Configure DrupalAuth for SimpleSAMLphp.'
+  weight: -9
+  route_name: drupalauth4ssp.settings

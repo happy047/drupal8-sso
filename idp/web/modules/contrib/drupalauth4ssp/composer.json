@@ -1,0 +1,26 @@
+{
+  "name": "drupal/drupalauth4ssp",
+  "description": "This module tightly integrates the SimpleSAMLphp Identity Provider login experience with a Drupal site.",
+  "type": "drupal-module",
+  "homepage": "https://drupal.org/project/drupalauth4ssp",
+  "authors": [
+    {
+      "name": "Steve Moitozo",
+      "email": "smoitozo@gmail.com"
+    },
+    {
+      "name": "Drupal Community",
+      "homepage": "https://www.drupal.org"
+    }
+  ],
+  "support": {
+    "issues": "https://drupal.org/project/issues/drupalauth4ssp",
+    "chat": "https://drupalchat.me/channel/drupalauth4ssp",
+    "source": "https://cgit.drupalcode.org/drupalauth4ssp"
+  },
+  "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "require": {
+    "drupalauth/simplesamlphp-module-drupalauth": "~1.8.0"
+  }
+}
