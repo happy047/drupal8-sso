@@ -3,7 +3,19 @@
 
 ## Table of Contents
 
-   [[_TOC_]]
+   - [Drupal 8 Single Sign On](#drupal-8-single-sign-on)
+  * [Table of Contents](#table-of-contents)
+  * [Features](#features)
+  * [Development](#development)
+    + [Tools and Prerequisites](#tools-and-prerequisites)
+    + [Local Environment Setup](#local-environment-setup)
+    + [Post Installation](#post-installation)
+    + [Final Step](#final-step)
+  * [How to setup your own Drupal 8 SP and IDP](#how-to-setup-your-own-drupal-8-sp-and-idp)
+    + [Configure SP portal](#configure-sp-portal)
+    + [Configure IDP portal](#configure-idp-portal)
+    + [Connect SP with IDP](#connect-sp-with-idp)
+
 
 
 ## Features
@@ -87,7 +99,7 @@ You can access the site at: [http://idp.lndo.site/](http://idp.lndo.site/).
 ### Final Step
 
 Now create some users in your IDP portal and then open your SP portal. You will see login button on the right most top section.
-Click on login and you will see in your login page, there is an IDP login link. CLick on that link and enter your IDP user credentials.
+Click on login and you will see in your login page, there is an IDP login link. Click on that link and enter your IDP user credentials.
 You will be now logged in in your SP portal and if you see in the people's list from admin end, you will notice the same user of the IDP
 portal has been created in your SP portal.
 
