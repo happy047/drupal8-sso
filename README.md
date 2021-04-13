@@ -1,5 +1,5 @@
 # Drupal 8 Single Sign On
-    This repository contains two drupal 8 setups (Service Provider and Identity Provider) implemented in localhost using two separate lando yml files.
+This repository contains two drupal 8 setups (Service Provider and Identity Provider) implemented in localhost using two separate lando yml files.
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ The following tools are required for setting up the setup. Ensure you are using 
 *Note: Ensure you have sufficient RAM (ideally 16 GB, minimum 8 GB)*
 
 ### Local Environment Setup
-    Once you have the tools installed, proceed to clone the repository and install.
+Once you have the tools installed, proceed to clone the repository and install.
 
 ```bash
 $ git clone https://github.com/happy047/drupal8-sso.git
